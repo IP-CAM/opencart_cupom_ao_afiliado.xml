@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Define o afiliado como o código do cupom</name>
+	<code>define_afiliado_por_cupom</code>
+	<version>1.0</version>
+	<author>Lucas Leal</author>
+	<link>https://lucasleal.dev</link>
+
+	<file path="catalog/controller/api/coupon.php">
+		<operation>
+			<search><![CDATA[$this->session->data['coupon'] = $this->request->post['coupon'];]]></search>
+			<add position="after"><![CDATA[
+
+			if (!isset($this->request->cookie['tracking'])) {
+				setcookie('tracking', $coupon, time() + 3600 * 24 * 1000, '/');
+				$this->db->query("UPDATE `" . DB_PREFIX . "marketing` SET clicks = (clicks + 1) WHERE code = '" . $this->db->escape($coupon) . "'");
+			}
+
+			]]></add>
+		</operation>
+	</file>
+	<file path="catalog/controller/extension/total/coupon.php">
+		<operation>
+			<search><![CDATA[$this->session->data['success'] = $this->language->get('text_success');]]></search>
+			<add position="after"><![CDATA[
+
+			if (!isset($this->request->cookie['tracking'])) {
+				setcookie('tracking', $coupon, time() + 3600 * 24 * 1000, '/');
+				$this->db->query("UPDATE `" . DB_PREFIX . "marketing` SET clicks = (clicks + 1) WHERE code = '" . $this->db->escape($coupon) . "'");
+			}
+
+			]]></add>
+		</operation>
+	</file>
+
+</modification>
